@@ -22,10 +22,15 @@ public final class Action {
     }
 
     public static Action createActivityAction(Entity entity, WorldModel world, ImageStore imageStore) {
+        System.out.println("Entity in createActivityAction -->" + entity);
+        System.out.println("Entity Details..>" + entity.id + entity.getKind());
         return new Action(ActionKind.ACTIVITY, entity, world, imageStore, 0);
     }
 
     public static Action createAnimationAction(Entity entity, int repeatCount) {
+        if (repeatCount <= 0) {
+            System.out.println("No more repeats for entity: " + entity.getId());
+        }
         return new Action(ActionKind.ANIMATION, entity, null, null, repeatCount);
     }
 
@@ -36,16 +41,19 @@ public final class Action {
      * @param scheduler The scheduler that queues up events.
      */
     public void executeActivityAction(EventScheduler scheduler) {
+        System.out.println("Entity--->: "+ entity.getKind());
+        System.out.println("Entity Name-->"+this.entity);
         switch (this.entity.getKind()) {
-            case SAPLING -> this.entity.executeSaplingActivity(this.world, this.imageStore, scheduler);
-            case TREE -> this.entity.executeTreeActivity(this.world, this.imageStore, scheduler);
-            case FAIRY -> this.entity.executeFairyActivity(this.world, this.imageStore, scheduler);
-            case DUDE_NOT_FULL -> this.entity.executeDudeNotFullActivity(this.world, this.imageStore, scheduler);
-            case DUDE_FULL -> this.entity.executeDudeFullActivity(this.world, this.imageStore, scheduler);
-            default ->
-                    throw new UnsupportedOperationException(String.format("executeActivityAction not supported for %s", this.entity.getKind()));
+            case "SAPLING" -> this.entity.executeActivity(this.world, this.imageStore, scheduler);
+            case "TREE" -> this.entity.executeActivity(this.world, this.imageStore, scheduler);
+            case "FAIRY" -> this.entity.executeActivity(this.world, this.imageStore, scheduler);
+            case "DUDE_NOT_FULL" -> this.entity.executeActivity(this.world, this.imageStore, scheduler);  // Delegating to executeActivity for DudeNotFull
+            case "DUDE_FULL" -> this.entity.executeActivity(this.world, this.imageStore, scheduler);  // Delegating to executeActivity for DudeFull
+            default -> throw new UnsupportedOperationException(String.format("executeActivityAction not supported for %s", this.entity.getKind()));
         }
     }
+
+
 
     /**
      * Ask the EventScheduler to execute an animation action for this action's Entity. This entails
@@ -54,14 +62,18 @@ public final class Action {
      * @param scheduler The scheduler that queues up events.
      */
     public void executeAnimationAction(EventScheduler scheduler) {
+        System.out.println("Executing animation for entity: " + this.entity.getId() + ", repeatCount: " + this.repeatCount);
         this.entity.nextImage();
 
         if (this.repeatCount != 1) {
+            System.out.println("Scheduling the event for the entity: " + this.entity);
             scheduler.scheduleEvent(this.entity, createAnimationAction(this.entity, Math.max(this.repeatCount - 1, 0)), this.entity.getAnimationPeriod());
         }
     }
 
     public void executeAction(EventScheduler scheduler) {
+        System.out.println("Executing action for entity: " + this.entity.getId());
+        System.out.println("Action Kind is: " + this.kind);
         switch (this.kind) {
             case ACTIVITY -> this.executeActivityAction(scheduler);
             case ANIMATION -> this.executeAnimationAction(scheduler);

@@ -2,6 +2,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents the 2D World in which this simulation is running.
@@ -25,9 +26,12 @@ public final class WorldModel {
     private Entity[][] occupancy;
     private Set<Entity> entities;
 
+
+
     public WorldModel() {
 
     }
+
 
     public int getRows() {
         return this.numRows;
@@ -92,64 +96,99 @@ public final class WorldModel {
         }
     }
 
+    /*
     private void parseSapling(String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == Entity.SAPLING_NUM_PROPERTIES) {
+            // Assuming actionPeriod and animationPeriod are in properties[1] and properties[2]
+            double actionPeriod = Double.parseDouble(properties[Entity.SAPLING_ACTION_PERIOD_IDX]);
+            double animationPeriod = Double.parseDouble(properties[Entity.SAPLING_ANIMATION_PERIOD_IDX]);
+
+            // Create the sapling entity
+            Entity entity = Sapling.createSapling(id, pt, imageStore.getImageList(Entity.SAPLING_KEY), actionPeriod, animationPeriod);
+
+            // Try adding the entity to the world
+            this.tryAddEntity(entity);
+        } else {
+            throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", Entity.SAPLING_KEY, Entity.SAPLING_NUM_PROPERTIES));
+        }
+    }
+    */
+    private void parseSapling(String[] properties, Point pt, String id, ImageStore imageStore) {
+        if (properties.length == Entity.SAPLING_NUM_PROPERTIES) {
+            double actionPeriod = Sapling.SAPLING_ACTION_ANIMATION_PERIOD;
+            double animationPeriod = Sapling.SAPLING_ACTION_ANIMATION_PERIOD;
+
             int health = Integer.parseInt(properties[Entity.SAPLING_HEALTH_IDX]);
-            Entity entity = Entity.createSapling(id, pt, imageStore.getImageList(Entity.SAPLING_KEY), health);
+            Entity entity = Sapling.createSapling(id, pt, imageStore.getImageList(Entity.SAPLING_KEY), actionPeriod, animationPeriod);
+                    //(id, pt, imageStore.getImageList(Entity.SAPLING_KEY), health);
             this.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", Entity.SAPLING_KEY, Entity.SAPLING_NUM_PROPERTIES));
         }
     }
 
-    private void parseDude(String[] properties, Point pt, String id, ImageStore imageStore) {
+
+     private void parseDude(String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == Entity.DUDE_NUM_PROPERTIES) {
-            Entity entity = Entity.createDudeNotFull(id, pt, Double.parseDouble(properties[Entity.DUDE_ACTION_PERIOD_IDX]), Double.parseDouble(properties[Entity.DUDE_ANIMATION_PERIOD_IDX]), Integer.parseInt(properties[Entity.DUDE_RESOURCE_LIMIT_IDX]), imageStore.getImageList(Entity.DUDE_KEY));
+            Entity entity = DudeNotFull.createDudeNotFull(id, pt,imageStore.getImageList(Entity.DUDE_NOT_FULL_KEY), Integer.parseInt(properties[Entity.DUDE_RESOURCE_LIMIT_IDX]), Double.parseDouble(properties[Entity.DUDE_ACTION_PERIOD_IDX]),Double.parseDouble(properties[Entity.DUDE_ANIMATION_PERIOD_IDX]));
             this.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", Entity.DUDE_KEY, Entity.DUDE_NUM_PROPERTIES));
         }
     }
 
+
     private void parseFairy(String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == Entity.FAIRY_NUM_PROPERTIES) {
-            Entity entity = Entity.createFairy(id, pt, Double.parseDouble(properties[Entity.FAIRY_ACTION_PERIOD_IDX]), Double.parseDouble(properties[Entity.FAIRY_ANIMATION_PERIOD_IDX]), imageStore.getImageList(Entity.FAIRY_KEY));
+            double actionPeriod = Double.parseDouble(properties[Entity.FAIRY_ACTION_PERIOD_IDX]);
+            double animationPeriod = Double.parseDouble(properties[Entity.FAIRY_ANIMATION_PERIOD_IDX]);
+
+            // Create Fairy using the create method
+            Entity entity = Fairy.createFairy(id, pt, imageStore.getImageList(Entity.FAIRY_KEY),
+                                                actionPeriod, animationPeriod);
+
+            // Add the entity to the world
             this.tryAddEntity(entity);
-        }else{
-            throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", Entity.FAIRY_KEY, Entity.FAIRY_NUM_PROPERTIES));
+        } else {
+            throw new IllegalArgumentException(String.format("%s requires %d properties when parsing",
+                                                             Entity.FAIRY_KEY, Entity.FAIRY_NUM_PROPERTIES));
         }
     }
 
+
     private void parseTree(String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == Entity.TREE_NUM_PROPERTIES) {
-            Entity entity = Entity.createTree(id, pt, Double.parseDouble(properties[Entity.TREE_ACTION_PERIOD_IDX]), Double.parseDouble(properties[Entity.TREE_ANIMATION_PERIOD_IDX]), Integer.parseInt(properties[Entity.TREE_HEALTH_IDX]), imageStore.getImageList(Entity.TREE_KEY));
+            Entity entity = Tree.createTree(id, pt, imageStore.getImageList(Entity.TREE_KEY), Double.parseDouble(properties[Entity.TREE_ACTION_PERIOD_IDX]), Double.parseDouble(properties[Entity.TREE_ANIMATION_PERIOD_IDX]), Integer.parseInt(properties[Entity.TREE_HEALTH_IDX]));
             this.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", Entity.TREE_KEY, Entity.TREE_NUM_PROPERTIES));
         }
     }
 
+
     private void parseObstacle(String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == Entity.OBSTACLE_NUM_PROPERTIES) {
-            Entity entity = Entity.createObstacle(id, pt, Double.parseDouble(properties[Entity.OBSTACLE_ANIMATION_PERIOD_IDX]), imageStore.getImageList(Entity.OBSTACLE_KEY));
+            Entity entity = Obstacle.createObstacle(id, pt, imageStore.getImageList(Entity.OBSTACLE_KEY),Double.parseDouble(properties[Entity.OBSTACLE_ANIMATION_PERIOD_IDX]));
             this.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", Entity.OBSTACLE_KEY, Entity.OBSTACLE_NUM_PROPERTIES));
         }
     }
 
+
     private void parseHouse(String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == Entity.HOUSE_NUM_PROPERTIES) {
-            Entity entity = Entity.createHouse(id, pt, imageStore.getImageList(Entity.HOUSE_KEY));
+            Entity entity = House.createHouse(id, pt, imageStore.getImageList(Entity.HOUSE_KEY),0,0,0);
             this.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", Entity.HOUSE_KEY, Entity.HOUSE_NUM_PROPERTIES));
         }
     }
 
+
     private void parseStump(String[] properties, Point pt, String id, ImageStore imageStore) {
         if (properties.length == Entity.STUMP_NUM_PROPERTIES) {
-            Entity entity = Entity.createStump(id, pt, imageStore.getImageList(Entity.STUMP_KEY));
+            Entity entity = Stump.createStump(id, pt, imageStore.getImageList(Entity.STUMP_KEY));
             this.tryAddEntity(entity);
         }else{
             throw new IllegalArgumentException(String.format("%s requires %d properties when parsing", Entity.STUMP_KEY, Entity.STUMP_NUM_PROPERTIES));
@@ -258,6 +297,7 @@ public final class WorldModel {
 
     public void load(Scanner saveFile, ImageStore imageStore, Background defaultBackground){
         this.parseSaveFile(saveFile, imageStore);
+        System.out.println("After load==>:" + entities);
         if(this.background == null){
             this.background = new Background[this.numRows][this.numCols];
             for (Background[] row : this.background)
@@ -267,6 +307,8 @@ public final class WorldModel {
             this.occupancy = new Entity[this.numRows][this.numCols];
             this.entities = new HashSet<>();
         }
+
+        System.out.println("After load==>:" + entities);
     }
 
     public void setOccupancyCell(Point pos, Entity entity) {
@@ -286,6 +328,7 @@ public final class WorldModel {
     }
 
     public void removeEntityAt(Point pos) {
+        System.out.println("Someone called me here in removeEntityAt-->");
         if (withinBounds(pos) && this.getOccupancyCell(pos) != null) {
             Entity entity = this.getOccupancyCell(pos);
 
@@ -298,6 +341,7 @@ public final class WorldModel {
     }
 
     public void removeEntity(EventScheduler scheduler, Entity entity) {
+        System.out.println("Someone called me here in removeEntity-->");
         scheduler.unscheduleAllEvents(entity);
         this.removeEntityAt(entity.getPosition());
     }
@@ -320,10 +364,12 @@ public final class WorldModel {
     public void addEntity(Entity entity) {
         if (withinBounds(entity.getPosition())) {
             this.setOccupancyCell(entity.getPosition(), entity);
+            System.out.println(entity.getKind());
             this.entities.add(entity);
+
         }
     }
-
+    /*
     public Optional<Entity> findNearest(Point pos, List<EntityKind> kinds) {
         List<Entity> ofType = new LinkedList<>();
         for (EntityKind kind : kinds) {
@@ -335,6 +381,13 @@ public final class WorldModel {
         }
 
         return Entity.nearestEntity(ofType, pos);
+    }*/
+
+    public Optional<Entity> findNearest(Point pos, List<Class<? extends Entity>> entityClasses) {
+        return this.entities.stream()
+                .filter(entity -> entityClasses.stream()
+                        .anyMatch(clazz -> clazz.isInstance(entity)))  // Filter entities based on class type
+                .min(Comparator.comparingDouble(entity -> distance(entity.getPosition(), pos)));  // Find the closest entity
     }
 
     public boolean isOccupied(Point pos) {
@@ -351,7 +404,7 @@ public final class WorldModel {
             // defining our own exceptions yet
             throw new IllegalArgumentException("position occupied");
         }
-
+        System.out.println(entity.getKind());
         this.addEntity(entity);
     }
 
@@ -365,5 +418,44 @@ public final class WorldModel {
             if(log != null) list.add(log);
         }
         return list;
+    }
+
+    public Optional<Entity> nearestEntity(List<Entity> entities, Point pos) {
+        if (entities.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Entity nearest = entities.get(0);  // Start with the first entity
+        double minDistance = distance(nearest.getPosition(), pos);
+
+        for (Entity entity : entities) {
+            double currentDistance = distance(entity.getPosition(), pos);
+            if (currentDistance < minDistance) {
+                nearest = entity;  // Update nearest entity
+                minDistance = currentDistance;
+            }
+        }
+
+        return Optional.of(nearest);  // Return the nearest entity
+
+    }
+
+    private double distance(Point p1, Point p2) {
+        int dx = p2.x - p1.x;
+        int dy = p2.y - p1.y;
+        return Math.sqrt(dx * dx + dy * dy);  // Euclidean distance
+    }
+       // Method to find a nearby house
+    public House getNearbyHouse(Point position) {
+        for (Entity entity : entities) {
+            if (entity instanceof House) {
+                House house = (House) entity;
+                // You can use a distance check or radius to determine if the house is nearby
+                if (distance(house.getPosition(), position) <= 1) { // Example radius check
+                    return house;
+                }
+            }
+        }
+        return null; // No nearby house found
     }
 }
