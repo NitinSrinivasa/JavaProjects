@@ -3,10 +3,11 @@ import processing.core.PImage;
 
 public abstract class Dude extends Entity {
     // Constants for indexing properties
-    private static final int DUDE_ACTION_PERIOD_IDX = 0;
-    private static final int DUDE_ANIMATION_PERIOD_IDX = 1;
-    private static final int DUDE_RESOURCE_LIMIT_IDX = 2;
-    private static final int DUDE_NUM_PROPERTIES = 3;
+    public static final int DUDE_ACTION_PERIOD_IDX = 0;
+    public static final int DUDE_ANIMATION_PERIOD_IDX = 1;
+    public static final int DUDE_RESOURCE_LIMIT_IDX = 2;
+    public static final int DUDE_NUM_PROPERTIES = 3;
+    public static final String DUDE_KEY = "dude";
 
     // Constructor for Dude class
     public Dude(String id, Point position, List<PImage> images, int resourceLimit,

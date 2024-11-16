@@ -11,7 +11,6 @@ public class Activity extends Action {
 
     @Override
     public void executeAction(EventScheduler scheduler) {
-        System.out.println("Executing activity for entity: " + this.entity.getId());
         switch (this.entity.getKind()) {
             case "SAPLING" -> this.entity.executeActivity(this.world, this.imageStore, scheduler);
             case "TREE" -> this.entity.executeActivity(this.world, this.imageStore, scheduler);

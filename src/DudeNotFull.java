@@ -4,6 +4,12 @@ import java.util.Optional;
 import processing.core.PImage;
 
 public class DudeNotFull extends Dude {
+
+    public static final int DUDE_NOT_FULL_NUM_PROPERTIES = 4;  // id, position, resourceLimit, actionPeriod, animationPeriod
+    public static final int DUDE_NOT_FULL_RESOURCE_LIMIT_IDX = 3;  // Index for resourceLimit in properties
+    public static final int DUDE_NOT_FULL_ACTION_PERIOD_IDX = 4;  // Index for actionPeriod
+    public static final int DUDE_NOT_FULL_ANIMATION_PERIOD_IDX = 5;  // Index for animationPeriod
+    public static final String DUDE_NOT_FULL_KEY = "dudeNotFull";  // Key for DudeNotFull
     public DudeNotFull(String id, Point position, List<PImage> images, int resourceLimit,
                    int resourceCount, double actionPeriod, double animationPeriod) {
         super(id, position, images, resourceLimit, resourceCount, actionPeriod, animationPeriod);  // Default health and healthLimit
@@ -14,41 +20,13 @@ public class DudeNotFull extends Dude {
         return "DUDE_NOT_FULL";
     }
 
-    /*
+
     @Override
     public void executeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
-        System.out.println("In DudeNotFull executeActivity >> " + world.getEntities());
-
-        // Look for a nearby collectible entity
-        CollectibleEntity collectible = findCollectible(world);
-
-        if (collectible != null) {
-            // Collect the resource if one is found
-            collectResource(collectible);
-            System.out.println(this.id + " collected a resource.");
-
-            // Check if resource count has reached the limit
-            if (this.resourceCount >= this.resourceLimit) {
-                transformToFull(world, imageStore, scheduler);  // Use helper method for transformation
-            } else {
-                // Schedule the activity again if not full
-                scheduler.scheduleEvent(this, Action.createActivityAction(this, world, imageStore), this.actionPeriod);
-            }
-        } else {
-            System.out.println(this.id + " could not find collectible.");
-            // If no collectible found, just reschedule the activity for next cycle
-            scheduler.scheduleEvent(this, Action.createActivityAction(this, world, imageStore), this.actionPeriod);
-        }
-    }
-*/
-    @Override
-    public void executeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
-        System.out.println("in executeActivity in dudenotfull");
         //world.findNearest(this.position, List.of(Stump.class));
         Optional<Entity> target = world.findNearest(this.position, List.of(Tree.class, Sapling.class));
 
         if (target.isEmpty() || !this.moveToNotFull(world, target.get(), scheduler) || !this.transformNotFull(world, scheduler, imageStore)) {
-            System.out.println("Inside the if statemetn in executeActivity in duenotfull");
             scheduler.scheduleEvent(this, Action.createActivityAction(this, world, imageStore), this.actionPeriod);
         }
     }
@@ -100,7 +78,7 @@ public class DudeNotFull extends Dude {
         Action activityAction = Action.createActivityAction(newDude, world, imageStore);
         scheduler.scheduleEvent(newDude, activityAction, newDude.getActionPeriod());
 
-        System.out.println(this.id + " transformed into DudeFull.");
+
     }
 
 

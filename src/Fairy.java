@@ -4,6 +4,10 @@ import processing.core.PImage;
 import java.util.Optional;
 
 public class Fairy extends Entity {
+    public static final String FAIRY_KEY = "fairy";
+    public static final int FAIRY_ANIMATION_PERIOD_IDX = 0;
+    public static final int FAIRY_ACTION_PERIOD_IDX = 1;
+    public static final int FAIRY_NUM_PROPERTIES = 2;
 
     public Fairy(String id, Point position, List<PImage> images, double actionPeriod, double animationPeriod) {
         super(id, position, images, 0, 0, actionPeriod, animationPeriod, 1, 0);  // Assuming 0 for health/other properties
@@ -18,21 +22,18 @@ public class Fairy extends Entity {
 
     @Override
     public void executeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
-        System.out.println("Fairy is executing activity");
 
         // Find the nearest stump (or any other target)
         Optional<Entity> fairyTarget = world.findNearest(this.position, List.of(Stump.class));
 
         //System.out.println("Fairy Target:" + fairyTarget.get().getKind());
         if (fairyTarget.isPresent()) {
-            System.out.println("In executeActivity in Fairy - Target is present");
             Point tgtPos = fairyTarget.get().getPosition();  // Get the target position
 
             // Try to move towards the target
             if (this.moveToFairy(world, fairyTarget.get(), scheduler)) {
-                System.out.println("In executeActivity in Fairy - Movetofairy");
                 // Create a new sapling entity if the fairy reaches the target
-                Entity sapling = Sapling.createSapling(SAPLING_KEY + "_" + fairyTarget.get().getId(), tgtPos, imageStore.getImageList(SAPLING_KEY), Sapling.SAPLING_ACTION_ANIMATION_PERIOD, Entity.SAPLING_ACTION_ANIMATION_PERIOD);
+                Entity sapling = Sapling.createSapling(Sapling.SAPLING_KEY + "_" + fairyTarget.get().getId(), tgtPos, imageStore.getImageList(Sapling.SAPLING_KEY), Sapling.SAPLING_ACTION_ANIMATION_PERIOD, Sapling.SAPLING_ACTION_ANIMATION_PERIOD);
 
                 // Add the sapling to the world and schedule its actions
                 world.addEntity(sapling);
@@ -56,7 +57,6 @@ public class Fairy extends Entity {
     }
 
     public void executeAnimationAction(EventScheduler scheduler) {
-        System.out.println("in Fairy executeAnimationAction");
         super.nextImage();  // Use base class method for image cycling
 
         // Reschedule the animation to continue indefinitely

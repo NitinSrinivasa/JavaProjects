@@ -62,15 +62,16 @@ public class WorldTests {
 
         assertEquals(0, entities.size());
 
+
         assertThrows(IllegalArgumentException.class, () ->
             VirtualWorld.headlessMain(new String[]{"Entities:\noops"}, 1)
         );
-
         assertThrows(IllegalArgumentException.class, () ->
             VirtualWorld.headlessMain(new String[]{"Entities:\noops _ 0 0"}, 1)
         );
-
         assertDoesNotThrow(() -> VirtualWorld.headlessMain(new String[]{"Rows:\n1"}, 1));
+
+
 
     }
 

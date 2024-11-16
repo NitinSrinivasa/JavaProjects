@@ -4,6 +4,11 @@ import processing.core.PImage;
 public class House extends Entity {
     private int capacity;  // The maximum number of entities or resources it can store
     private int storedResources;  // The current number of resources it stores
+    public static final String HOUSE_KEY = "house";
+    public static final int HOUSE_NUM_PROPERTIES = 0;
+    public static final int HOUSE_CAPACITY_IDX = 3;
+    public static final int HOUSE_ACTION_PERIOD_IDX = 4;
+    public static final int HOUSE_ANIMATION_PERIOD_IDX = 5;
 
     public House(String id, Point position, List<PImage> images, int capacity, double actionPeriod, double animationPeriod) {
         super(id, position, images, 0, 0, actionPeriod, animationPeriod, 0, 0);  // House doesn't need a resource count at first
@@ -14,8 +19,6 @@ public class House extends Entity {
     public void storeResources(int resources) {
         if (this.storedResources + resources <= this.capacity) {
             this.storedResources += resources;
-        } else {
-            System.out.println("House cannot store more resources. Capacity exceeded.");
         }
     }
 

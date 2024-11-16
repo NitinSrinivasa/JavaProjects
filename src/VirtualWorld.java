@@ -15,11 +15,11 @@ public final class VirtualWorld extends PApplet {
     public static final int VIEW_COLS = VIEW_WIDTH / TILE_WIDTH;
     public static final int VIEW_ROWS = VIEW_HEIGHT / TILE_HEIGHT;
 
-    public static final String IMAGE_LIST_FILE_NAME = "/Users/nitinsrinivasa/IdeaProjects/project-2-cohesion-NitinSrinivasa/imagelist";
+    public static final String IMAGE_LIST_FILE_NAME = "imagelist";
     public static final String DEFAULT_IMAGE_NAME = "background_default";
     public static final int DEFAULT_IMAGE_COLOR = 0x808080;
 
-    private String loadFile = "/Users/nitinsrinivasa/IdeaProjects/project-2-cohesion-NitinSrinivasa/world.sav";
+    private String loadFile = "world.sav";
     private long startTimeMillis = 0;
 
     private ImageStore imageStore;
@@ -36,16 +36,14 @@ public final class VirtualWorld extends PApplet {
     */
     public void setup() {
         parseCommandLine(ARGS);
-        System.out.println(IMAGE_LIST_FILE_NAME);
+
         loadImages(IMAGE_LIST_FILE_NAME);
 
         loadWorld(loadFile, this.imageStore);
-        System.out.println("Entities after loadWorld: " + world.getEntities());
         this.view = new WorldView(VIEW_ROWS, VIEW_COLS, this, world, TILE_WIDTH, TILE_HEIGHT);
         this.scheduler = new EventScheduler();
         this.startTimeMillis = System.currentTimeMillis();
         this.scheduleActions(this.world, this.scheduler, this.imageStore);
-        System.out.println("Actions scheduled for entities.");
     }
 
     public void draw() {
@@ -128,7 +126,6 @@ public final class VirtualWorld extends PApplet {
         } catch (FileNotFoundException e) {
             Scanner in = new Scanner(file);
             world.load(in, imageStore, createDefaultBackground(imageStore));
-            System.out.println("Entities-klfdj: " + world.getEntities());
         }
     }
 
@@ -148,10 +145,7 @@ public final class VirtualWorld extends PApplet {
 
         VirtualWorld virtualWorld = new VirtualWorld();
         virtualWorld.setup();
-        System.out.println("Entities=====>> after setup" + virtualWorld.world.getEntities());
         virtualWorld.update(lifetime);
-        System.out.println("Entities=====>> after update " + virtualWorld.world.getEntities());
-
         return virtualWorld.world.log();
     }
 }

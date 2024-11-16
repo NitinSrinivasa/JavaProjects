@@ -19,7 +19,6 @@ public final class EventScheduler {
     }
 
     public void updateOnTime(double time) {
-        System.out.println("updateontime: "+ time);
         double stopTime = this.currentTime + time;
         while (!this.eventQueue.isEmpty() && this.eventQueue.peek().getTime() <= stopTime) {
             Event next = this.eventQueue.poll();
@@ -34,19 +33,14 @@ public final class EventScheduler {
         List<Event> pending = this.pendingEvents.get(event.getEntity());
         if (pending != null) {
             pending.remove(event);
-            System.out.println("Removed event for entity: " + event.getEntity().getId());
-        } else {
-            System.out.println("No pending event found for entity: " + event.getEntity().getId());
         }
     }
 
 
     public void unscheduleAllEvents(Entity entity) {
-        System.out.println("Unscheduling all events for entity: " + entity.getId());
         List<Event> pending = this.pendingEvents.remove(entity);
         if (pending != null) {
             for (Event event : pending) {
-                System.out.println("Removing event: " + event);
                 this.eventQueue.remove(event);
             }
         }
@@ -57,7 +51,6 @@ public final class EventScheduler {
         double time = this.currentTime + afterPeriod;
 
         Event event = new Event(action, time, entity);
-        System.out.println("Scheduling event: " + event);
         this.eventQueue.add(event);
 
         // update list of pending events for the given entity
